@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Phaser Puzzle</title>
+        
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		
+		<script src="phaser.min.js"></script>
+		<script src="jquery.min.js"></script>
+	</head>
+	<body>
+	
+		<div id="container"></div>
+		
+		<script>
+		
+			var currentWidth = 1280;
+			var currentHeight = 1000;
+			//currentWidth = currentHeight * (innerWidth/innerHeight);
+			
+			console.log("Original Width: " + innerWidth + " Current Game Width: " + currentWidth);
+			console.log("Original Height: " + innerHeight + " Current Game Height: " + currentHeight);
+			
+			var config = {
+				type: Phaser.AUTO,
+				backgroundColor: '#ffffff',
+				scale: {
+					mode: Phaser.Scale.FIT,
+    				autoCenter: Phaser.Scale.CENTER_BOTH,
+					_parent: 'container',
+					width: currentWidth,
+					height: currentHeight,
+				},
+				scene: {
+					preload: preload,
+					create: create,
+					update : update,
+				},
+				dom: {
+					createContainer: true
+				},
+				physics: {
+					/*
+                    default: 'arcade',
+                    arcade: {
+                        gravity: { y: 300 },
+                        debug: false
+                    }
+					*/
+                },
+			};
+
+            $("document").ready(function(){
+                var game = new Phaser.Game(config);
+            });
+			
+			var myGame;
+			var highestZ = 0;
+			var piecesDone = 0;
+			
+			var pieces = [
+				{ x : 18, y : 24 },
+				{ x : 438, y : 24 },
+				{ x : 762, y : 24 },
+				
+				{ x : 18, y : 250 },
+				{ x : 438, y : 250 },
+				{ x : 762, y : 250 },
+				
+				{ x : 18, y : 670 },
+				{ x : 438, y : 670 },
+				{ x : 762, y : 670 },
+			];
+			
+			function preload ()
+			{
+			    myGame = this;
+				
+				for(var i = 0; i < pieces.length; i++){
+					myGame.load.image('p'+i, 'p'+i+'.png');
+				}
+				
+			}
+			
+			function create ()
+			{
+				
+				//Phaser.Math.Between(100, currentWidth-100), Phaser.Math.Between(100, currentHeight - 100)
+				
+				for(var i = 0; i < pieces.length; i++){
+					myGame.add.image(Phaser.Math.Between(0, currentWidth-300), Phaser.Math.Between(0, currentHeight - 300), "p" + i).setInteractive({ draggable: true }).setOrigin(0).pIndex = i;
+				}
+				
+				myGame.input.on('dragstart', function (pointer, gameObject) {
+					//gameObject.setTint(0xff0000);
+					highestZ++;
+					gameObject.setDepth(highestZ);
+				});
+
+				myGame.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+					//console.log('drag', dragX, dragY)
+					gameObject.x = dragX;
+					gameObject.y = dragY;
+				});
+
+				myGame.input.on('dragend', function (pointer, gameObject) {
+					//gameObject.clearTint();
+					//console.log(gameObject);	
+					if(Phaser.Math.Distance.BetweenPoints(gameObject, pieces[gameObject.pIndex]) < 50){
+						gameObject.x = pieces[gameObject.pIndex].x;
+						gameObject.y = pieces[gameObject.pIndex].y;
+						gameObject.disableInteractive();
+						//console.log("Okay!");
+						piecesDone++;
+						if(piecesDone == pieces.length){
+							setTimeout(function(){
+								alert("Good Job!");
+							}, 1000);
+						}
+					}
+				});
+			}
+			
+			function update()
+			{}
+			
+			
+		</script>
+		
+		
+	</body>
+</html>
