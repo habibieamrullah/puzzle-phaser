@@ -18,6 +18,7 @@
 		
 			var currentWidth = 1280;
 			var currentHeight = 1000;
+			var puzzleBgFolder = "colors";
 			//currentWidth = currentHeight * (innerWidth/innerHeight);
 			
 			console.log("Original Width: " + innerWidth + " Current Game Width: " + currentWidth);
@@ -79,7 +80,7 @@
 			    myGame = this;
 				
 				for(var i = 0; i < pieces.length; i++){
-					myGame.load.image('p'+i, 'p'+i+'.png');
+					myGame.load.image("p"+i, puzzleBgFolder + "/p"+i+".png");
 				}
 				
 			}
@@ -87,10 +88,11 @@
 			function create ()
 			{
 				
-				//Phaser.Math.Between(100, currentWidth-100), Phaser.Math.Between(100, currentHeight - 100)
-				
 				for(var i = 0; i < pieces.length; i++){
+					
+					//myGame.add.image(pieces[i].x, pieces[i].y, "p" + i).setInteractive({ draggable: true }).setOrigin(0).pIndex = i;
 					myGame.add.image(Phaser.Math.Between(0, currentWidth-300), Phaser.Math.Between(0, currentHeight - 300), "p" + i).setInteractive({ draggable: true }).setOrigin(0).pIndex = i;
+					
 				}
 				
 				myGame.input.on('dragstart', function (pointer, gameObject) {
